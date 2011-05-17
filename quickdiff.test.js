@@ -104,25 +104,38 @@ function testTransition(a, b) {
   db = $(genDiv(genDiv(sb)));
   
   da.quickdiff("patch", db);
-  equal(innerHTML(da[0]), genDiv(sb));
+  equal(innerHTML(da[0]), genDiv(sb), "" + a + "->" + b);
 }
 
 test ("cases", function () {
-  testTransition("xx", "xxxx");
-  testTransition("xxxx", "xx");
-  testTransition("xyx","xyxyx");
-  testTransition("xyxyx","xyx");
-  testTransition("xyxyx","xyxy");
-  testTransition("xyxyx","xy");
-  testTransition("xyxyx","x");
-  testTransition("xyxyx","");
-  testTransition("ab","abc");
-  testTransition("abc","ab");
-  testTransition("abcd","abxx");
-  testTransition("abc","axc");
-  testTransition("abcd","axxd");
-  testTransition("xab","abx");
-  testTransition("x","abc");
-  testTransition("x","abx");
-  testTransition("xx","abxx");
+  
+  var letters = "ab", gen = [""], space = 4, i, j, k, arr;
+  
+  // Build strings
+  for (i = 0; i < space; i++) {
+    for (j = 0, len = gen.length; j < len; j++) {
+      for (k = 0; k < letters.length; k++) {
+        gen.push(gen[j]+letters[k]);
+      }
+    }
+  }
+
+  // strip duplicates
+  arr = {};
+  for ( i=0; i < gen.length; i++ )
+      arr[gen[i]] = gen[i];
+  gen = [];
+  for ( key in arr )
+    gen.push(arr[key]);
+
+  // generate tuples
+  var tuples = [];
+  for (i = 0, len = gen.length; i < len; i++)
+    for (j = 0, len = gen.length; j < len; j++)
+      tuples.push([gen[i], gen[j]]);
+  
+  // test the tuple transitions
+  for ( i in tuples ) {
+    testTransition(tuples[i][0], tuples[i][1]);
+  }
 });
